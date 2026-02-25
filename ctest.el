@@ -224,6 +224,7 @@ Provides Magit-like section navigation and folding.")
     (goto-char (point-min))
     (forward-line (1- current-line))))
 
+;;;###autoload
 (defun ctest-status ()
   "Display the ctest status buffer.
 If the buffer already exists, switches to it preserving state.
@@ -499,14 +500,19 @@ Parses ANSI escape codes to render native Emacs colors."
    ("d" "Debug test at point" ctest-debug-current)
    ("l" "Show log buffer"   ctest-show-log)])
 
-;; Update Evil Keybindings
-(map! :map ctest-status-mode-map
-      :n "?" #'ctest-dispatch
-      :n "l" #'ctest-show-log
-      :n "r" #'ctest-run-current
-      :n "d" #'ctest-debug-current
-      :n "u" #'ctest-unmark-all
-      :nv "m" #'ctest-mark-toggle-region-or-line)
+(with-eval-after-load 'evil
+  ;; Standard Evil keybindings for Normal state
+  (evil-define-key 'normal ctest-status-mode-map
+    (kbd "?") #'ctest-dispatch
+    (kbd "l") #'ctest-show-log
+    (kbd "r") #'ctest-run-current
+    (kbd "d") #'ctest-debug-current
+    (kbd "u") #'ctest-unmark-all
+    (kbd "m") #'ctest-mark-toggle-region-or-line)
+
+  ;; Standard Evil keybindings for Visual state
+  (evil-define-key 'visual ctest-status-mode-map
+    (kbd "m") #'ctest-mark-toggle-region-or-line))
 
 
 (provide 'ctest)
